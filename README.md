@@ -1,5 +1,5 @@
 # SimpleExoPlayerDemo
-基于ExoPlayer开发的可自定义皮肤的Demo
+基于ExoPlayer开发的可自定义皮肤的视频播放器
 
 预览：
 
