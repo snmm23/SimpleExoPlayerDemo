@@ -1,32 +1,48 @@
 package com.example.sunbolin.mytestapplication;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
-import sun.bo.lin.exoplayer.ui.ExoPlayerLayout;
-import sun.bo.lin.exoplayer.ui.ExoPlayerListener;
+import java.util.ArrayList;
 
-public class SimpleExoPlayerDemoActivity extends AppCompatActivity implements ExoPlayerListener {
+import sun.bo.lin.exoplayer.all.AllExoPlayerLayout;
+import sun.bo.lin.exoplayer.all.AllExoPlayerListener;
+import sun.bo.lin.exoplayer.all.StreamGroup;
 
-    private ExoPlayerLayout exoPlayerLayout;
+public class SimpleExoPlayerDemoActivity extends AppCompatActivity implements AllExoPlayerListener {
 
-    private String videoUrl;
+    private AllExoPlayerLayout exoPlayerLayout;
+    private View other;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simple_exo_player_demo);
 
-        videoUrl = "http://phwoanpja.bkt.clouddn.com/2ff13eca058a12a3ad2c3f93406a03a2.mp4";
-
+        other = findViewById(R.id.other);
         exoPlayerLayout = findViewById(R.id.exoPlayerLayout);
-        exoPlayerLayout.hideTitleView();
-        exoPlayerLayout.setAlwaysShowController(false);
-        exoPlayerLayout.setExoPlayerListener(this);
-        exoPlayerLayout.setFullscreenButton(false);
 
-        exoPlayerLayout.play(videoUrl, 0,false, true);
+        ArrayList<StreamGroup> streamGroups = new ArrayList<>();
+        streamGroups.add(new StreamGroup("标准", "http://221.228.226.23/11/t/j/v/b/tjvbwspwhqdmgouolposcsfafpedmb/sh.yinyuetai.com/691201536EE4912BF7E4F1E2C67B8119.mp4"));
+
+        exoPlayerLayout.setLaunchDate(this, this, "title", 0, streamGroups);
+        exoPlayerLayout.play();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        //do something
+        int mCurrentOrientation = getResources().getConfiguration().orientation;
+        if (mCurrentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            other.setVisibility(View.VISIBLE);
+        } else if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            other.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -41,35 +57,11 @@ public class SimpleExoPlayerDemoActivity extends AppCompatActivity implements Ex
         exoPlayerLayout.onResume();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        exoPlayerLayout.onStop();
-    }
 
     @Override
     protected void onDestroy() {
-        exoPlayerLayout.releasePlayer();
+        exoPlayerLayout.onDestroy();
         super.onDestroy();
-    }
-
-
-    @Override
-    public void doHorizontalScreen() {
-    }
-
-    @Override
-    public void doVerticalScreen() {
-    }
-
-    @Override
-    public void setViewHistory(long longTime) {
-
-    }
-
-    @Override
-    public void goBack(boolean isSure) {
-
     }
 
     @Override
@@ -84,11 +76,6 @@ public class SimpleExoPlayerDemoActivity extends AppCompatActivity implements Ex
 
     @Override
     public void playerError() {
-
-    }
-
-    @Override
-    public void playerOnTouch() {
 
     }
 }

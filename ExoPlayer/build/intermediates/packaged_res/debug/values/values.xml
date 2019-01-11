@@ -7,6 +7,28 @@
         <enum name="fill" value="3"/>
         <enum name="zoom" value="4"/>
     </attr>
-    <declare-styleable name="EmptyPlayerLayout"><attr name="resize_mode"/></declare-styleable>
-    <declare-styleable name="ExoPlayerLayout"><attr name="resize_mode"/></declare-styleable>
+    <color name="color_FFDF5159">#FFDF5159</color>
+    <declare-styleable name="EmptyPlayerLayout">
+        <attr name="resize_mode"/>
+    </declare-styleable>
+    <declare-styleable name="ExoPlayerLayout">
+        <attr name="resize_mode"/>
+    </declare-styleable>
+    <declare-styleable name="MyULCLoadingView">
+        <attr format="dimension" name="borderWidth"/>
+        <attr format="integer" name="maxAngle"/>
+        <attr format="color" name="borderColor"/>
+        <attr format="integer" name="duration"/>
+    </declare-styleable>
+    <dimen name="default_loading_border_width">5dp</dimen>
+    <style name="Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

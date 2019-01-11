@@ -15,13 +15,26 @@
         app:resize_mode="fit"
         app:use_controller="false" />
 
-    <ProgressBar
+    <FrameLayout
         android:id="@+id/player_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminateTint="#c0c0c0"
-        android:indeterminateTintMode="src_atop" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <sun.bo.lin.exoplayer.util.MyULCLoadingView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            app:borderColor="#c0c0c0"
+            app:borderWidth="3dp" />
+
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_ug_loading" />
+
+    </FrameLayout>
 
     <Button
         android:id="@+id/player_error"
@@ -32,35 +45,8 @@
         android:paddingRight="16dp"
         android:paddingLeft="16dp"
         android:layout_gravity="center"
-        android:text="加载失败 点击重试"
+        android:text="加载失败，点击重试"
         android:textSize="16sp"
         android:visibility="invisible" />
 
-    <LinearLayout
-        android:id="@+id/player_4g_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:visibility="invisible">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="您正在使用非wifi网络, 播放将产生流量费用"
-            android:textColor="#fff"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/player_4g_loading_go"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="继续播放"
-            android:textColor="#ffffff"
-            android:textSize="14sp" />
-    </LinearLayout>
 </FrameLayout>

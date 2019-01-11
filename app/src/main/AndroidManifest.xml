@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name="com.example.sunbolin.mytestapplication.SimpleExoPlayerDemoActivity"
-            android:configChanges="orientation|keyboard">
+            android:configChanges="orientation|keyboard|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

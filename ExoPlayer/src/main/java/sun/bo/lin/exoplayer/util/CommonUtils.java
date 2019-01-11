@@ -17,7 +17,7 @@ public class CommonUtils {
     protected static CommonUtils instance;
 
     private CommonUtils(Context c) {
-        context = c;
+        context = c.getApplicationContext();
         userAgent = Util.getUserAgent(context, "ExoPlayerDemo");
     }
 
