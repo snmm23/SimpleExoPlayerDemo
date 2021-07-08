@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingRight="12dp"
+        android:background="@drawable/control_top_bg">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:src="@drawable/ic_round_arrow_back_24" />
+
+        <TextView
+            android:id="@+id/title"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="3dp"
+            android:textColor="#fff"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/controller_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/control_bottom_bg"
+        android:gravity="center_vertical"
+        android:clipChildren="false"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_marginLeft="8dp"
+            android:id="@+id/pause"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_round_play_arrow_24" />
+
+        <TextView
+            android:text="00:00"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="12dp"
+            android:id="@+id/time_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:textSize="12sp" />
+
+        <SeekBar
+            android:id="@+id/mediacontroller_progress"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:layout_margin="0dp"
+            android:maxHeight="2dp"
+            android:minHeight="2dp"
+            android:progressDrawable="@drawable/seek_bar_bg"
+            android:thumb="@drawable/seek_bar_thumb" />
+
+        <TextView
+            android:text="00:00"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/fullscreen_land"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingRight="8dp"
+            android:src="@drawable/ic_round_fullscreen_24" />
+
+
+    </LinearLayout>
+
+</FrameLayout>
