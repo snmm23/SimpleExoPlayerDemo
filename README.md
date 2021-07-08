@@ -1,8 +1,8 @@
 # SimpleExoPlayerDemo
 基于ExoPlayer开发的可自定义皮肤的视频播放器
 
-DOC:https://exoplayer.dev/ui-components.html
+ExoPlayer Doc: https://exoplayer.dev/ui-components.html
 
 预览：
 
-![gif](https://github.com/sunzoulin/SimpleExoPlayerDemo/blob/master/gif/review1.gif)
+2D视频
