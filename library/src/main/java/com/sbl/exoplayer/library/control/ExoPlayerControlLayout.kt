@@ -17,9 +17,8 @@ import com.sbl.exoplayer.library.R
 import java.lang.ref.WeakReference
 import java.util.*
 
-
 /**
- * Created by sunbolin on 16/4/18.
+ * sunbolin 2021/7/9
  */
 class ExoPlayerControlLayout @JvmOverloads constructor(
     context: Context?,
@@ -49,6 +48,7 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     private var mFormatBuilder: StringBuilder
     private var mFormatter: Formatter
 
+    private var fullscreenAbility = false
     private var isDragSeekBar = false
     private var isFinish = false
     private var isError = false
@@ -83,6 +83,9 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        if (!fullscreenAbility) {
+            return
+        }
         updateConfigurationViews()
     }
 
@@ -274,6 +277,16 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
 
     fun setTitleName(titleName: String?) {
         title.text = titleName
+    }
+
+
+    fun canFullscreenAbility(ability: Boolean) {
+        fullscreenAbility = ability
+        if (ability) {
+            fullscreen.visibility = View.VISIBLE
+        } else {
+            fullscreen.visibility = View.GONE
+        }
     }
 
 

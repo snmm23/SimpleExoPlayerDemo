@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ExoPlayerDemo</string>
+    <string name="hello_exo_player_demo">Hello~ ExoPlayerDemo</string>
+
+    <string name="video_2d">2D视频</string>
+    <string name="video_vr">VR视频</string>
 </resources>

@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="3dp"
-            android:textColor="#fff"
+            android:textColor="@android:color/white"
             android:textSize="14sp" />
 
     </LinearLayout>
@@ -62,7 +62,7 @@
             android:id="@+id/current_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#fff"
+            android:textColor="@android:color/white"
             android:textSize="12sp" />
 
         <SeekBar
@@ -81,17 +81,18 @@
         <TextView
             android:text="00:00"
             android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
             android:id="@+id/total_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#fff"
+            android:textColor="@android:color/white"
             android:textSize="12sp" />
 
         <ImageView
+            android:visibility="visible"
             android:id="@+id/fullscreen"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:src="@drawable/ic_round_fullscreen_24" />
 

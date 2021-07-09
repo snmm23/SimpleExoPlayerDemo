@@ -15,14 +15,14 @@ import com.sbl.exoplayer.utils.ScreenSwitchHelper
  */
 class Video2DDemoActivity : AppCompatActivity() {
 
-    private lateinit var exoPlayerGroup: FrameLayout
+    private lateinit var playerGroup: FrameLayout
     private lateinit var exoPlayerLayout: ExoPlayerLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_2d_demo)
-        exoPlayerGroup = findViewById(R.id.exoPlayerGroup)
+        playerGroup = findViewById(R.id.playerGroup)
         exoPlayerLayout = ExoPlayerLayout(this)
         exoPlayerLayout.setLaunchDate(
             this,
@@ -39,14 +39,14 @@ class Video2DDemoActivity : AppCompatActivity() {
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             ScreenSwitchHelper.exitFullScreen(this)
             AndroidContentGroupManager.removeLandScapeVideoView(this, exoPlayerLayout)
-            exoPlayerGroup.addView(
+            playerGroup.addView(
                 exoPlayerLayout,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         } else {
             ScreenSwitchHelper.enterFullScreen(this)
-            exoPlayerGroup.removeView(exoPlayerLayout)
+            playerGroup.removeView(exoPlayerLayout)
             AndroidContentGroupManager.addLandScapeVideoView(this, exoPlayerLayout)
         }
     }

@@ -1,7 +1,7 @@
 package com.sbl.exoplayer.library.control
 
 /**
- * Created by sunbolin on 2016/12/28.
+ * sunbolin 2021/7/9
  */
 interface ExoPlayerControlListener {
 
