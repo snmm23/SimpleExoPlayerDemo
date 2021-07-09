@@ -15,12 +15,10 @@
         app:resize_mode="fit"
         app:use_controller="false" />
 
-
     <com.sbl.exoplayer.library.control.ExoPlayerControlLayout
-        android:id="@+id/controller_layout"
+        android:id="@+id/control_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
 
     <ProgressBar
         android:id="@+id/player_loading"

@@ -36,7 +36,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/controller_ll"
+        android:id="@+id/control_bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -46,7 +46,8 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_marginLeft="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:id="@+id/pause"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -57,16 +58,15 @@
             android:text="00:00"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginRight="12dp"
-            android:id="@+id/time_current"
+            android:id="@+id/current_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#fff"
             android:textSize="12sp" />
 
         <SeekBar
-            android:id="@+id/mediacontroller_progress"
+            android:id="@+id/seek_bar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -81,20 +81,19 @@
         <TextView
             android:text="00:00"
             android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:id="@+id/time"
+            android:id="@+id/total_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#fff"
             android:textSize="12sp" />
 
         <ImageView
-            android:id="@+id/fullscreen_land"
+            android:id="@+id/fullscreen"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingRight="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:src="@drawable/ic_round_fullscreen_24" />
-
 
     </LinearLayout>
 

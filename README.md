@@ -5,4 +5,6 @@ ExoPlayer Doc: https://exoplayer.dev/ui-components.html
 
 预览：
 
-2D视频
+2D视频 竖屏显示
+
+2D视频 横屏显示

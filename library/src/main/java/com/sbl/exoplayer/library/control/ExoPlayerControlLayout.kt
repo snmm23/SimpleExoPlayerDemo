@@ -1,8 +1,5 @@
 package com.sbl.exoplayer.library.control
 
-import android.animation.Animator
-import android.animation.Animator.AnimatorListener
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
@@ -11,11 +8,15 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
+import com.google.android.exoplayer2.Player
 import com.sbl.exoplayer.library.R
 import java.lang.ref.WeakReference
 import java.util.*
+
 
 /**
  * Created by sunbolin on 16/4/18.
@@ -37,43 +38,45 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
 
     private var back: ImageView
     private var title: TextView
-    private var controllerLayout: LinearLayout
-    private var mProgress: SeekBar
-    private var mEndTime: TextView
-    private var mCurrentTime: TextView
-    private var mPauseButton: ImageView
-    private var mFullscreenLand: ImageView
+    private var controlBottomLayout: LinearLayout
+    private var seekBar: SeekBar
+    private var totalTime: TextView
+    private var currentTime: TextView
+    private var pause: ImageView
+    private var fullscreen: ImageView
 
     private var mHandler: Handler
     private var mFormatBuilder: StringBuilder
     private var mFormatter: Formatter
 
-    var isShowing = false
-        private set
+    private var isDragSeekBar = false
     private var isFinish = false
     private var isError = false
+
+
+    private var viewAnimation: AlphaAnimation? = null
+    private var isAnimationRun: Boolean = false
+    private var isHide: Boolean = false
 
 
     init {
         LayoutInflater.from(context).inflate(R.layout.exo_player_control_layout, this)
         back = findViewById(R.id.back)
         title = findViewById(R.id.title)
-        controllerLayout = findViewById(R.id.controller_ll)
-        mFullscreenLand = findViewById(R.id.fullscreen_land)
-        mPauseButton = findViewById(R.id.pause)
-        mProgress = findViewById(R.id.mediacontroller_progress)
-        mEndTime = findViewById(R.id.time)
-        mCurrentTime = findViewById(R.id.time_current)
-
+        controlBottomLayout = findViewById(R.id.control_bottom_layout)
+        fullscreen = findViewById(R.id.fullscreen)
+        pause = findViewById(R.id.pause)
+        seekBar = findViewById(R.id.seek_bar)
+        totalTime = findViewById(R.id.total_time)
+        currentTime = findViewById(R.id.current_time)
 
         back.setOnClickListener(this)
-        mFullscreenLand.setOnClickListener(this)
-        mPauseButton.setOnClickListener(this)
-        mProgress.setOnSeekBarChangeListener(this)
-        mProgress.max = 1000
+        fullscreen.setOnClickListener(this)
+        pause.setOnClickListener(this)
+        seekBar.setOnSeekBarChangeListener(this)
+        seekBar.max = 1000
         mFormatBuilder = StringBuilder()
         mFormatter = Formatter(mFormatBuilder, Locale.getDefault())
-
         mHandler = MessageHandler(this)
     }
 
@@ -86,9 +89,9 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
 
     private fun updateConfigurationViews() {
         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mFullscreenLand.setImageResource(R.drawable.ic_round_fullscreen_24)
+            fullscreen.setImageResource(R.drawable.ic_round_fullscreen_24)
         } else {
-            mFullscreenLand.setImageResource(R.drawable.ic_round_fullscreen_exit_24)
+            fullscreen.setImageResource(R.drawable.ic_round_fullscreen_exit_24)
         }
     }
 
@@ -107,21 +110,20 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     }
 
 
-    private fun setProgress(): Long {
+    private fun setProgress(): Long  {
         return if (exoPlayerControlListener != null) {
             val position = exoPlayerControlListener!!.getCurrentPosition()
             val duration = exoPlayerControlListener!!.getDuration()
             if (duration > 0) {
-                if (!mProgress.isEnabled) {
-                    mProgress.isEnabled = true
-                }
                 val percent = 1000L * position / duration
-                mProgress.progress = percent.toInt()
+                seekBar.progress = percent.toInt()
             }
+
             val percent1 = exoPlayerControlListener!!.getBufferPercentage()
-            mProgress.secondaryProgress = percent1 * 10
-            mEndTime.text = stringForTime(duration)
-            mCurrentTime.text = stringForTime(position)
+            seekBar.secondaryProgress = percent1 * 10
+            totalTime.text = stringForTime(duration)
+            currentTime.text = stringForTime(position)
+
             Log.e(TAG, "currentPlayTime = " + stringForTime(position))
             position
         } else {
@@ -133,13 +135,13 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     private fun updatePausePlay() {
         when {
             isFinish -> {
-                mPauseButton.setImageResource(R.drawable.ic_round_replay_24)
+                pause.setImageResource(R.drawable.ic_round_replay_24)
             }
             exoPlayerControlListener?.isPlaying()?: false -> {
-                mPauseButton.setImageResource(R.drawable.ic_round_pause_24)
+                pause.setImageResource(R.drawable.ic_round_pause_24)
             }
             else -> {
-                mPauseButton.setImageResource(R.drawable.ic_round_play_arrow_24)
+                pause.setImageResource(R.drawable.ic_round_play_arrow_24)
             }
         }
     }
@@ -151,18 +153,16 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
                 exoPlayerControlListener?.doBack()
             }
 
-            mPauseButton -> {
-                if (!isError) {
-                    if (isFinish) {
-                        doRestart()
-                    } else {
-                        doPauseResume()
-                    }
+            pause -> {
+                if (isFinish) {
+                    doRestart()
+                } else {
+                    doPauseResume()
                 }
                 show()
             }
 
-            mFullscreenLand -> {
+            fullscreen -> {
                 if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                     exoPlayerControlListener?.doHorizontalScreen()
                 } else {
@@ -176,41 +176,39 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
         if (fromUser) {
-            val duration = exoPlayerControlListener!!.getDuration()
+            val duration = exoPlayerControlListener?.getDuration()?: 0
             val newPosition = duration * progress.toLong() / 1000L
-            exoPlayerControlListener!!.seekTo(newPosition)
-            mCurrentTime.text = stringForTime(newPosition)
+
+            if (isFinish) {
+                setFinish(false)
+            }
+            exoPlayerControlListener?.seekTo(newPosition)
+            currentTime.text = stringForTime(newPosition)
         }
     }
 
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {
-        show()
+        isDragSeekBar = true
     }
 
 
-    override fun onStopTrackingTouch(seekBar: SeekBar) {}
+    override fun onStopTrackingTouch(seekBar: SeekBar) {
+        isDragSeekBar = false
+    }
 
 
-    private inner class MessageHandler constructor(view: ExoPlayerControlLayout?) : Handler() {
+    private inner class MessageHandler constructor(view: ExoPlayerControlLayout) : Handler() {
 
-        private val mView: WeakReference<ExoPlayerControlLayout?> = WeakReference(view)
+        private val mView: WeakReference<ExoPlayerControlLayout> = WeakReference(view)
 
         override fun handleMessage(msg: Message) {
             val view = mView.get()
-            if (view?.exoPlayerControlListener != null) {
-                when (msg.what) {
-                    1 -> view.hide()
-                    2 -> {
-                        Log.e(
-                            TAG,
-                            "handleMessage isPlaying = " + view.exoPlayerControlListener!!.isPlaying() + ", handleMessage isFinish = " + view.isFinish
-                        )
-                        if (!view.isFinish && !isError) sendMessageDelayed(
-                            obtainMessage(2),
-                            1000 - view.setProgress() % 1000
-                        )
-                    }
+            when (msg.what) {
+                1 -> view?.hide()
+                2 -> {
+                    sendMessageDelayed(obtainMessage(2), 1000 - view?.setProgress()!! % 1000)
+                    setProgress()
                 }
             }
         }
@@ -220,8 +218,13 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     private fun doPauseResume() {
         exoPlayerControlListener?.apply {
             if (isPlaying()) {
+                mHandler.removeMessages(2)
                 exoPlayerControlListener?.pause()
             } else {
+
+                if (isFinish) {
+                    setFinish(false)
+                }
                 exoPlayerControlListener?.start()
             }
         }
@@ -229,6 +232,9 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
 
 
     private fun doRestart() {
+        if (isFinish) {
+            setFinish(false)
+        }
         exoPlayerControlListener?.restart()
     }
 
@@ -238,28 +244,31 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     }
 
 
-    fun setFinish(flag: Boolean) {
-        Log.e(TAG, "setFinish , isFinish = $flag")
+    private fun setFinish(flag: Boolean) {
+        Log.e(TAG, "setFinish(), isFinish = $flag")
+
         isFinish = flag
-        mHandler.removeMessages(2)
-        if (!isFinish) {
-            mHandler.sendEmptyMessage(2)
-        } else {
-            mProgress.progress = 1000
+
+        if (flag) {
+            mHandler.removeMessages(2)
+
+            seekBar.progress = 1000
+            setProgress()
         }
-        updatePausePlay()
     }
 
 
-    fun setError(flag: Boolean) {
+    private fun setError(flag: Boolean) {
+        Log.e(TAG, "setError(), isError = $flag")
         isError = flag
-        mProgress.isEnabled = !isError
+
         if (flag) {
-            controllerLayout.visibility = INVISIBLE
+
+            mHandler.removeMessages(2)
+            controlBottomLayout.visibility = INVISIBLE
         } else {
-            controllerLayout.visibility = VISIBLE
+            controlBottomLayout.visibility = VISIBLE
         }
-        updatePausePlay()
     }
 
 
@@ -268,15 +277,52 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     }
 
 
-    fun show() {
-        Log.e(TAG, "show()")
-        if (!isShowing) {
-            isShowing = true
-            try {
-                showControllerAnimation()
-            } catch (ignored: Exception) {
+    fun releaseControl() {
+        mHandler.removeMessages(1)
+        mHandler.removeMessages(2)
+        isDragSeekBar = false
+        isFinish = false
+        isError = false
+        exoPlayerControlListener = null
+    }
+
+
+    fun onPlayerStateBack(state: Int) {
+        when (state) {
+            Player.STATE_READY -> {
+                if (isError) {
+                    setError(false)
+                }
+                mHandler.sendEmptyMessage(2)
+                show()
+            }
+
+            Player.STATE_ENDED -> {
+                setFinish(true)
+                show()
             }
         }
+    }
+
+
+    fun onPlayerError() {
+        setError(true)
+        show()
+    }
+
+
+    fun onClickPlayerView() {
+        if (isHide) {
+            show()
+        } else {
+            hide()
+        }
+    }
+
+
+    private fun show() {
+        Log.e(TAG, "show()")
+        showAnim()
         updateConfigurationViews()
         updatePausePlay()
         mHandler.removeMessages(1)
@@ -284,50 +330,71 @@ class ExoPlayerControlLayout @JvmOverloads constructor(
     }
 
 
-    fun hide() {
+    private fun hide() {
         Log.e(TAG, "hide()")
-        try {
-            hideControllerAnimation(object : AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    isShowing = false
+        //是否正在拖动SeekBar
+        if (isDragSeekBar) {
+            return
+        }
+        mHandler.removeMessages(1)
+        hideAnim()
+    }
+
+
+    private fun showAnim() {
+        if (isAnimationRun || !isHide) {
+            return
+        }
+        if (viewAnimation == null) {
+            viewAnimation = AlphaAnimation(0f, 1f)
+
+            viewAnimation!!.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation) {
+                    isAnimationRun = true
+                    visibility = View.VISIBLE
                 }
 
-                override fun onAnimationCancel(animation: Animator) {
-                    isShowing = false
+                override fun onAnimationEnd(animation: Animation) {
+                    isHide = false
+                    isAnimationRun = false
+                    viewAnimation = null
                 }
 
-                override fun onAnimationRepeat(animation: Animator) {
-                    isShowing = false
-                }
+                override fun onAnimationRepeat(animation: Animation) {}
             })
-        } catch (ignored: Exception) {
-            isShowing = false
+            viewAnimation!!.duration = 400
+        }
+        if (viewAnimation != null) {
+            startAnimation(viewAnimation)
         }
     }
 
 
-    fun releaseControl() {
-        mHandler.removeMessages(1)
-        mHandler.removeMessages(2)
-        isShowing = false
-        isFinish = false
-        isError = false
-        exoPlayerControlListener = null
-    }
+    private fun hideAnim() {
+        if (isAnimationRun || isHide) {
+            return
+        }
+        if (viewAnimation == null) {
+            viewAnimation = AlphaAnimation(1f, 0f)
 
+            viewAnimation!!.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation) {
+                    isAnimationRun = true
+                }
 
-    private fun showControllerAnimation() {
-        val objectAnimator = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f)
-        objectAnimator.duration = 400
-        objectAnimator.start()
-    }
+                override fun onAnimationEnd(animation: Animation) {
+                    isHide = true
+                    visibility = View.GONE
+                    isAnimationRun = false
+                    viewAnimation = null
+                }
 
-
-    private fun hideControllerAnimation(animationListener: AnimatorListener) {
-        val objectAnimator = ObjectAnimator.ofFloat(this, "alpha", 1f, 0f)
-        objectAnimator.duration = 400
-        objectAnimator.addListener(animationListener)
-        objectAnimator.start()
+                override fun onAnimationRepeat(animation: Animation) {}
+            })
+            viewAnimation!!.duration = 400
+        }
+        if (viewAnimation != null) {
+            startAnimation(viewAnimation)
+        }
     }
 }

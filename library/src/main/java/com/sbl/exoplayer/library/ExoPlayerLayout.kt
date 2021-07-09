@@ -35,17 +35,18 @@ class ExoPlayerLayout @JvmOverloads constructor(
     }
 
     private var playerView: PlayerView
-    private var player: SimpleExoPlayer? = null
     private var controlLayout: ExoPlayerControlLayout
     private var playerLoading: ProgressBar
     private var playerError: ImageView
 
+    private var player: SimpleExoPlayer? = null
+
     private var activity: Activity? = null
     private var titleName: String? = null
     private var streamUrl: String? = null
-    private var startWindow = 0
+    private var startWindow: Int = 0
     private var startPosition: Long = 0
-    private var isError = false
+
     private var isPause = false
 
 
@@ -54,10 +55,10 @@ class ExoPlayerLayout @JvmOverloads constructor(
         playerView = findViewById(R.id.player_view)
         playerLoading = findViewById(R.id.player_loading)
         playerError = findViewById(R.id.player_error)
-        controlLayout = findViewById(R.id.controller_layout)
+        controlLayout = findViewById(R.id.control_layout)
+
         playerError.setOnClickListener(this)
         controlLayout.setupListener(this)
-
         setOnTouchListener(this)
     }
 
@@ -81,7 +82,6 @@ class ExoPlayerLayout @JvmOverloads constructor(
         )
         player!!.setMediaItem(mediaItem, !haveStartPosition)
         player!!.prepare()
-        controlLayout.show()
     }
 
 
@@ -99,11 +99,7 @@ class ExoPlayerLayout @JvmOverloads constructor(
     override fun onTouch(v: View, event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> try {
-                if (controlLayout.isShowing) {
-                    controlLayout.hide()
-                } else {
-                    controlLayout.show()
-                }
+                controlLayout.onClickPlayerView()
             } catch (var2: NullPointerException) {
                 var2.printStackTrace()
             }
@@ -187,9 +183,9 @@ class ExoPlayerLayout @JvmOverloads constructor(
 
 
     private fun releasePlayer() {
-        isError = false
         playerLoading.visibility = GONE
         playerError.visibility = GONE
+
         controlLayout.releaseControl()
 
         streamUrl = null
@@ -201,29 +197,20 @@ class ExoPlayerLayout @JvmOverloads constructor(
     private inner class PlayerEventListener : Player.EventListener {
         override fun onPlaybackStateChanged(state: Int) {
             Log.e(TAG, "playbackState = $state")
+            controlLayout.onPlayerStateBack(state)
+
             when (state) {
                 Player.STATE_BUFFERING -> {
-                    controlLayout.setFinish(false)
                     playerLoading.visibility = VISIBLE
                     playerError.visibility = GONE
                 }
+
                 Player.STATE_READY -> {
                     playerLoading.visibility = GONE
                     playerError.visibility = GONE
-                    controlLayout.setFinish(false)
-                    if (isError) {
-                        isError = false
-                        controlLayout.setError(false)
-                        controlLayout.show()
-                    }
-                    controlLayout.show()
                 }
+
                 Player.STATE_ENDED -> {
-                    controlLayout.setFinish(true)
-                    controlLayout.show()
-                    if (isError) {
-                        controlLayout.hide()
-                    }
                     playerLoading.visibility = GONE
                     playerError.visibility = GONE
                 }
@@ -235,10 +222,8 @@ class ExoPlayerLayout @JvmOverloads constructor(
             release()
             playerLoading.visibility = GONE
             playerError.visibility = VISIBLE
-            if (!isError) {
-                isError = true
-                controlLayout.setError(true)
-            }
+
+            controlLayout.onPlayerError()
         }
     }
 
@@ -270,14 +255,11 @@ class ExoPlayerLayout @JvmOverloads constructor(
     }
 
 
-    fun play() {
+    fun play(isAutoPlay: Boolean) {
         if (streamUrl == null || streamUrl!!.isEmpty()) {
             return
         }
-        startPosition = 0
-        isError = false
-        controlLayout.setError(false)
-        initializePlayer(false)
+        initializePlayer(isAutoPlay)
     }
 
 

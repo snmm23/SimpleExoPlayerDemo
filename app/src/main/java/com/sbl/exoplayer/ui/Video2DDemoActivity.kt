@@ -29,7 +29,7 @@ class Video2DDemoActivity : AppCompatActivity() {
             "2D Video",
             "https://vfx.mtime.cn/Video/2019/01/15/mp4/190115161611510728_480.mp4"
         )
-        exoPlayerLayout.play()
+        exoPlayerLayout.play(false)
         onConfigurationChanged(resources.configuration)
     }
 
