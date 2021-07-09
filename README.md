@@ -16,7 +16,6 @@ ExoPlayer Doc: https://exoplayer.dev/ui-components.html
 
 ![png](https://github.com/sunzoulin/SimpleExoPlayerDemo/blob/master/pic/device-2021-07-09-145348.png)
 
-
 VR 180度视频显示
 
 ![png](https://github.com/sunzoulin/SimpleExoPlayerDemo/blob/master/pic/device-2021-07-09-170051.png)
